@@ -72,14 +72,40 @@
 
 @media (max-width: 768px) {
   .score-board {
-    padding: 16px 20px;
+    padding: 14px 16px;
+    gap: 16px;
+    margin-bottom: 16px;
   }
   
   .score-value {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
   
   .score-label {
     font-size: 0.7rem;
+  }
+  
+  .score-value.difficulty {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-board {
+    padding: 12px 14px;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .score-value {
+    font-size: 1.3rem;
+  }
+  
+  .score-label {
+    font-size: 0.65rem;
+  }
+  
+  .score-value.difficulty {
+    font-size: 0.9rem;
   }
 }

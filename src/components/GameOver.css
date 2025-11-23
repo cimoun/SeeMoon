@@ -136,14 +136,50 @@
 
 @media (max-width: 768px) {
   .game-over-modal {
-    padding: 32px 24px;
+    padding: 28px 20px;
+    width: 85%;
   }
   
   .game-over-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
   }
   
   .final-score-value {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+  
+  .high-score-value {
+    font-size: 1.4rem;
+  }
+  
+  .restart-button {
+    padding: 12px 32px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-over-modal {
+    padding: 24px 16px;
+    width: 90%;
+  }
+  
+  .game-over-title {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+  
+  .final-score-value {
+    font-size: 1.5rem;
+  }
+  
+  .high-score-value {
+    font-size: 1.2rem;
+  }
+  
+  .restart-button {
+    padding: 12px 28px;
+    font-size: 0.9rem;
   }
 }

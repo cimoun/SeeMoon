@@ -4,10 +4,12 @@ import GameBoard from './GameBoard';
 import ScoreBoard from './ScoreBoard';
 import GameOver from './GameOver';
 import Controls from './Controls';
+import { handleTouchStart, handleTouchMove, handleTouchEnd } from '../utils/touchControls';
 import './Game.css';
 
 const Game = () => {
   const [difficulty, setDifficulty] = useState('medium');
+  const [touchStart, setTouchStart] = useState(null);
   const {
     snake,
     food,
@@ -34,6 +36,40 @@ const Game = () => {
     };
   }, [handleKeyPress]);
 
+  const handleSwipe = (direction) => {
+    if (!isPlaying || gameOver) return;
+    
+    const directionMap = {
+      up: 'ArrowUp',
+      down: 'ArrowDown',
+      left: 'ArrowLeft',
+      right: 'ArrowRight'
+    };
+    
+    handleKeyPress(directionMap[direction]);
+  };
+
+  const onTouchStart = (e) => {
+    if (isPlaying && !gameOver) {
+      e.preventDefault();
+      handleTouchStart(e, setTouchStart);
+    }
+  };
+
+  const onTouchMove = (e) => {
+    if (touchStart && isPlaying && !gameOver) {
+      e.preventDefault();
+      handleTouchMove(e, touchStart, handleSwipe, setTouchStart);
+    }
+  };
+
+  const onTouchEnd = (e) => {
+    if (touchStart) {
+      e.preventDefault();
+    }
+    handleTouchEnd(setTouchStart);
+  };
+
   const handleStart = () => {
     startGame();
   };
@@ -58,7 +94,12 @@ const Game = () => {
           difficulty={difficulty}
           isPaused={isPaused}
         />
-        <div className="game-area">
+        <div 
+          className="game-area"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           <GameBoard snake={snake} food={food} direction={direction} />
           {gameOver && (
             <GameOver 
@@ -76,6 +117,7 @@ const Game = () => {
           onPause={togglePause}
           difficulty={difficulty}
           onDifficultyChange={handleDifficultyChange}
+          onSwipe={handleSwipe}
         />
       </div>
     </div>

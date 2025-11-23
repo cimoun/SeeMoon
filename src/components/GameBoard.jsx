@@ -11,9 +11,14 @@ const GameBoard = ({ snake, food, direction }) => {
     return '';
   };
 
+  const getBodyIndex = (x, y) => {
+    return snake.slice(1).findIndex(segment => segment.x === x && segment.y === y);
+  };
+
   const renderCell = (x, y) => {
     const isSnakeHead = snake[0]?.x === x && snake[0]?.y === y;
-    const isSnakeBody = snake.slice(1).some(segment => segment.x === x && segment.y === y);
+    const bodyIndex = getBodyIndex(x, y);
+    const isSnakeBody = bodyIndex !== -1;
     const isFood = food.x === x && food.y === y;
 
     let cellClass = 'cell';
@@ -21,17 +26,25 @@ const GameBoard = ({ snake, food, direction }) => {
       cellClass += ' snake-head';
       cellClass += ' ' + getDirectionClass();
     }
-    if (isSnakeBody) cellClass += ' snake-body';
+    if (isSnakeBody) {
+      cellClass += ' snake-body';
+    }
     if (isFood) cellClass += ' food';
+
+    const style = {
+      gridColumn: x + 1,
+      gridRow: y + 1
+    };
+
+    if (isSnakeBody) {
+      style['--body-index'] = bodyIndex;
+    }
 
     return (
       <div
         key={`${x}-${y}`}
         className={cellClass}
-        style={{
-          gridColumn: x + 1,
-          gridRow: y + 1
-        }}
+        style={style}
       />
     );
   };
