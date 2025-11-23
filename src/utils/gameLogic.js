@@ -1,22 +1,32 @@
 export const GRID_SIZE = 20;
 export const CELL_SIZE = 20;
 export const INITIAL_SNAKE = [{ x: 10, y: 10 }];
-export const INITIAL_DIRECTION = { x: 1, y: 0 };
+export const INITIAL_DIRECTION = { x: 0, y: 0 };
 
 export const DIFFICULTY_LEVELS = {
-  easy: { speed: 200, name: 'Легкий' },
-  medium: { speed: 120, name: 'Средний' },
-  hard: { speed: 80, name: 'Сложный' }
+  easy: { speed: 250, name: 'Легкий' },
+  medium: { speed: 150, name: 'Средний' },
+  hard: { speed: 100, name: 'Сложный' }
 };
 
 export const generateFood = (snake) => {
+  // Ensure safe spawn distance from snake head
+  const head = snake[0];
   let food;
+  let safeDistance = false;
+  
   do {
     food = {
       x: Math.floor(Math.random() * GRID_SIZE),
       y: Math.floor(Math.random() * GRID_SIZE)
     };
-  } while (snake.some(segment => segment.x === food.x && segment.y === food.y));
+    
+    // Calculate manhattan distance
+    const distance = Math.abs(food.x - head.x) + Math.abs(food.y - head.y);
+    safeDistance = distance > 2; // Keep at least 2 cells away at spawn
+    
+  } while (snake.some(segment => segment.x === food.x && segment.y === food.y) || !safeDistance);
+  
   return food;
 };
 

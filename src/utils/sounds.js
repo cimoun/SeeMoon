@@ -38,14 +38,15 @@ class SoundManager {
   }
 
   playEatSound() {
-    this.playTone(440, 0.1, 'sine');
-    setTimeout(() => this.playTone(554, 0.1, 'sine'), 50);
+    // Softer sound: lower frequency, sine wave, gentle envelope
+    this.playTone(330, 0.05, 'sine'); 
+    setTimeout(() => this.playTone(440, 0.05, 'sine'), 40);
   }
 
   playGameOverSound() {
-    this.playTone(440, 0.2, 'sine');
-    setTimeout(() => this.playTone(330, 0.2, 'sine'), 100);
-    setTimeout(() => this.playTone(220, 0.3, 'sine'), 200);
+    this.playTone(220, 0.3, 'triangle');
+    setTimeout(() => this.playTone(196, 0.3, 'triangle'), 150);
+    setTimeout(() => this.playTone(165, 0.4, 'triangle'), 300);
   }
 
   playPauseSound() {

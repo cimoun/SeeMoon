@@ -61,14 +61,28 @@ export const useGame = (difficulty = 'medium') => {
 
     let newDirection = directionRef.current;
     
-    if (inputBufferRef.current.length > 0) {
+    // Handle start of game - wait for initial direction
+    if (newDirection.x === 0 && newDirection.y === 0) {
+      if (inputBufferRef.current.length > 0) {
+        newDirection = inputBufferRef.current.shift();
+        directionRef.current = newDirection;
+        setDirection(newDirection);
+        setNextDirection(newDirection);
+      } else {
+        return; // Don't move until first input
+      }
+    } else if (inputBufferRef.current.length > 0) {
+      // Process next buffered input
       const bufferedDirection = inputBufferRef.current[0];
       if (isValidDirection(bufferedDirection, directionRef.current)) {
         newDirection = bufferedDirection;
         inputBufferRef.current.shift();
         directionRef.current = newDirection;
-        setNextDirection(newDirection);
         setDirection(newDirection);
+        setNextDirection(newDirection);
+      } else {
+        // Invalid direction in buffer (e.g. 180 turn), discard it
+        inputBufferRef.current.shift();
       }
     } else if (nextDirection.x !== directionRef.current.x || nextDirection.y !== directionRef.current.y) {
       if (isValidDirection(nextDirection, directionRef.current)) {
@@ -162,15 +176,28 @@ export const useGame = (difficulty = 'medium') => {
         return;
     }
 
-    if (newDirection && isValidDirection(newDirection, directionRef.current)) {
-      const currentDir = directionRef.current;
-      if (newDirection.x !== currentDir.x || newDirection.y !== currentDir.y) {
-        if (inputBufferRef.current.length === 0) {
-          setNextDirection(newDirection);
+    if (newDirection) {
+      // Allow setting direction even if currently not moving (start of game)
+      const isStationary = directionRef.current.x === 0 && directionRef.current.y === 0;
+      
+      if (isStationary || isValidDirection(newDirection, directionRef.current)) {
+        // If stationary, just take the first input
+        if (isStationary) {
+           // Only add to buffer if buffer is empty to avoid double start issue
+           if (inputBufferRef.current.length === 0) {
+             inputBufferRef.current.push(newDirection);
+           }
         } else {
-          const lastBuffered = inputBufferRef.current[inputBufferRef.current.length - 1];
-          if (!lastBuffered || (lastBuffered.x !== newDirection.x || lastBuffered.y !== newDirection.y)) {
-            if (inputBufferRef.current.length < 1) {
+          // Standard buffering logic
+          if (inputBufferRef.current.length === 0) {
+             if (newDirection.x !== directionRef.current.x || newDirection.y !== directionRef.current.y) {
+                setNextDirection(newDirection);
+                // Also push to buffer to ensure it's picked up by game loop
+                inputBufferRef.current.push(newDirection);
+             }
+          } else if (inputBufferRef.current.length < 2) {
+            const lastBuffered = inputBufferRef.current[inputBufferRef.current.length - 1];
+            if (!lastBuffered || (lastBuffered.x !== newDirection.x || lastBuffered.y !== newDirection.y)) {
               inputBufferRef.current.push(newDirection);
             }
           }
