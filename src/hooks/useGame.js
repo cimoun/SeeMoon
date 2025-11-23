@@ -55,17 +55,23 @@ export const useGame = (difficulty = 'medium') => {
     if (isPaused || !isPlaying || gameOver) return;
 
     setSnake(prevSnake => {
-      let newDirection = nextDirection;
+      let newDirection = directionRef.current;
       
       if (inputBufferRef.current.length > 0) {
-        const bufferedDirection = inputBufferRef.current.shift();
+        const bufferedDirection = inputBufferRef.current[0];
         if (isValidDirection(bufferedDirection, directionRef.current)) {
           newDirection = bufferedDirection;
+          inputBufferRef.current.shift();
           setNextDirection(newDirection);
+          setDirection(newDirection);
+        }
+      } else if (nextDirection.x !== directionRef.current.x || nextDirection.y !== directionRef.current.y) {
+        if (isValidDirection(nextDirection, directionRef.current)) {
+          newDirection = nextDirection;
+          setDirection(newDirection);
         }
       }
       
-      setDirection(newDirection);
       directionRef.current = newDirection;
 
       const newSnake = moveSnake(prevSnake, newDirection);
@@ -152,13 +158,19 @@ export const useGame = (difficulty = 'medium') => {
     }
 
     if (newDirection && isValidDirection(newDirection, directionRef.current)) {
-      if (inputBufferRef.current.length === 0 && newDirection.x !== nextDirection.x && newDirection.y !== nextDirection.y) {
-        setNextDirection(newDirection);
-      }
-      if (inputBufferRef.current.length < 2) {
-        const lastBuffered = inputBufferRef.current[inputBufferRef.current.length - 1];
-        if (!lastBuffered || (lastBuffered.x !== newDirection.x || lastBuffered.y !== newDirection.y)) {
-          inputBufferRef.current.push(newDirection);
+      const currentDir = directionRef.current;
+      if (newDirection.x !== currentDir.x || newDirection.y !== currentDir.y) {
+        if (inputBufferRef.current.length === 0) {
+          setNextDirection(newDirection);
+          setDirection(newDirection);
+          directionRef.current = newDirection;
+        } else {
+          const lastBuffered = inputBufferRef.current[inputBufferRef.current.length - 1];
+          if (!lastBuffered || (lastBuffered.x !== newDirection.x || lastBuffered.y !== newDirection.y)) {
+            if (inputBufferRef.current.length < 1) {
+              inputBufferRef.current.push(newDirection);
+            }
+          }
         }
       }
     }
