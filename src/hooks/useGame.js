@@ -37,13 +37,6 @@ export const useGame = (difficulty = 'medium') => {
     directionRef.current = direction;
   }, [direction]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem(HIGH_SCORE_KEY);
-    if (saved) {
-      setHighScore(parseInt(saved, 10));
-    }
-  }, []);
-
   const saveHighScore = useCallback((newScore) => {
     if (newScore > highScore) {
       setHighScore(newScore);
@@ -162,7 +155,7 @@ export const useGame = (difficulty = 'medium') => {
         }
       }
     }
-  }, [gameOver, isPlaying]);
+  }, [gameOver, isPlaying, nextDirection]);
 
   const startGame = useCallback(() => {
     setSnake(INITIAL_SNAKE);

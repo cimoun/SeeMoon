@@ -8,7 +8,7 @@ class SoundManager {
   initAudioContext() {
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (e) {
+    } catch {
       console.warn('Web Audio API not supported');
       this.enabled = false;
     }
@@ -32,7 +32,8 @@ class SoundManager {
 
       oscillator.start(this.audioContext.currentTime);
       oscillator.stop(this.audioContext.currentTime + duration);
-    } catch (e) {
+    } catch {
+      // Silently ignore audio context errors
     }
   }
 
