@@ -50,15 +50,17 @@ const Game = () => {
   };
 
   const onTouchStart = (e) => {
-    if (isPlaying && !gameOver) {
+    if (isPlaying && !gameOver && !isPaused) {
       e.preventDefault();
+      e.stopPropagation();
       handleTouchStart(e, setTouchStart);
     }
   };
 
   const onTouchMove = (e) => {
-    if (touchStart && isPlaying && !gameOver) {
+    if (touchStart && isPlaying && !gameOver && !isPaused) {
       e.preventDefault();
+      e.stopPropagation();
       handleTouchMove(e, touchStart, handleSwipe, setTouchStart);
     }
   };
@@ -66,8 +68,9 @@ const Game = () => {
   const onTouchEnd = (e) => {
     if (touchStart) {
       e.preventDefault();
+      e.stopPropagation();
+      handleTouchEnd(touchStart, handleSwipe, setTouchStart);
     }
-    handleTouchEnd(setTouchStart);
   };
 
   const handleStart = () => {
@@ -95,19 +98,21 @@ const Game = () => {
           isPaused={isPaused}
         />
         <div 
-          className="game-area"
+          className="game-area-wrapper"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          <GameBoard snake={snake} food={food} direction={direction} />
-          {gameOver && (
-            <GameOver 
-              score={score} 
-              highScore={highScore} 
-              onRestart={handleRestart} 
-            />
-          )}
+          <div className="game-area">
+            <GameBoard snake={snake} food={food} direction={direction} />
+            {gameOver && (
+              <GameOver 
+                score={score} 
+                highScore={highScore} 
+                onRestart={handleRestart} 
+              />
+            )}
+          </div>
         </div>
         <Controls
           isPlaying={isPlaying}
@@ -117,7 +122,6 @@ const Game = () => {
           onPause={togglePause}
           difficulty={difficulty}
           onDifficultyChange={handleDifficultyChange}
-          onSwipe={handleSwipe}
         />
       </div>
     </div>

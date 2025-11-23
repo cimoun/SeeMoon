@@ -1,34 +1,43 @@
 export const handleTouchStart = (e, setTouchStart) => {
   setTouchStart({
     x: e.touches[0].clientX,
-    y: e.touches[0].clientY
+    y: e.touches[0].clientY,
+    time: Date.now()
   });
 };
 
 export const handleTouchMove = (e, touchStart, handleSwipe, setTouchStart) => {
   if (!touchStart) return;
   
-  const touchEnd = {
+  const touchCurrent = {
     x: e.touches[0].clientX,
     y: e.touches[0].clientY
   };
   
-  const diffX = touchStart.x - touchEnd.x;
-  const diffY = touchStart.y - touchEnd.y;
+  const diffX = touchStart.x - touchCurrent.x;
+  const diffY = touchStart.y - touchCurrent.y;
   
-  const minSwipeDistance = 30;
+  const minSwipeDistance = 25;
+  const maxSwipeTime = 300;
+  const swipeTime = Date.now() - touchStart.time;
   
-  if (Math.abs(diffX) > Math.abs(diffY)) {
-    if (Math.abs(diffX) > minSwipeDistance) {
+  if (swipeTime > maxSwipeTime) {
+    setTouchStart(null);
+    return;
+  }
+  
+  const absX = Math.abs(diffX);
+  const absY = Math.abs(diffY);
+  
+  if (absX > minSwipeDistance || absY > minSwipeDistance) {
+    if (absX > absY) {
       if (diffX > 0) {
         handleSwipe('left');
       } else {
         handleSwipe('right');
       }
       setTouchStart(null);
-    }
-  } else {
-    if (Math.abs(diffY) > minSwipeDistance) {
+    } else {
       if (diffY > 0) {
         handleSwipe('up');
       } else {
@@ -39,7 +48,16 @@ export const handleTouchMove = (e, touchStart, handleSwipe, setTouchStart) => {
   }
 };
 
-export const handleTouchEnd = (setTouchStart) => {
+export const handleTouchEnd = (touchStart, handleSwipe, setTouchStart) => {
+  if (!touchStart) return;
+  
+  const swipeTime = Date.now() - touchStart.time;
+  const minSwipeTime = 50;
+  
+  if (swipeTime < minSwipeTime) {
+    setTouchStart(null);
+    return;
+  }
+  
   setTouchStart(null);
 };
-
