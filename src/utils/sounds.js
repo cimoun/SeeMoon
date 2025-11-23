@@ -1,4 +1,3 @@
-// Simple sound effects using Web Audio API
 class SoundManager {
   constructor() {
     this.audioContext = null;
@@ -34,18 +33,15 @@ class SoundManager {
       oscillator.start(this.audioContext.currentTime);
       oscillator.stop(this.audioContext.currentTime + duration);
     } catch (e) {
-      // Silently fail if audio context is not available
     }
   }
 
   playEatSound() {
-    // Play a pleasant ascending tone
     this.playTone(440, 0.1, 'sine');
     setTimeout(() => this.playTone(554, 0.1, 'sine'), 50);
   }
 
   playGameOverSound() {
-    // Play a descending tone
     this.playTone(440, 0.2, 'sine');
     setTimeout(() => this.playTone(330, 0.2, 'sine'), 100);
     setTimeout(() => this.playTone(220, 0.3, 'sine'), 200);

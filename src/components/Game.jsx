@@ -22,7 +22,6 @@ const Game = () => {
     handleKeyPress
   } = useGame(difficulty);
 
-  // Handle keyboard events
   useEffect(() => {
     const handleKeyDown = (e) => {
       handleKeyPress(e.key);

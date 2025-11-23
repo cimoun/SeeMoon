@@ -32,12 +32,10 @@ export const useGame = (difficulty = 'medium') => {
   const gameLoopRef = useRef(null);
   const directionRef = useRef(INITIAL_DIRECTION);
 
-  // Update direction ref when direction changes
   useEffect(() => {
     directionRef.current = direction;
   }, [direction]);
 
-  // Load high score from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(HIGH_SCORE_KEY);
     if (saved) {
@@ -45,7 +43,6 @@ export const useGame = (difficulty = 'medium') => {
     }
   }, []);
 
-  // Save high score to localStorage
   const saveHighScore = useCallback((newScore) => {
     if (newScore > highScore) {
       setHighScore(newScore);
@@ -53,21 +50,17 @@ export const useGame = (difficulty = 'medium') => {
     }
   }, [highScore]);
 
-  // Game loop
   const gameLoop = useCallback(() => {
     if (isPaused || !isPlaying || gameOver) return;
 
     setSnake(prevSnake => {
-      // Update direction from nextDirection
       const newDirection = nextDirection;
       setDirection(newDirection);
       directionRef.current = newDirection;
 
-      // Move snake
       const newSnake = moveSnake(prevSnake, newDirection);
       const head = newSnake[0];
 
-      // Check collisions
       if (isOutOfBounds(head) || checkSelfCollision(newSnake)) {
         setGameOver(true);
         setIsPlaying(false);
@@ -75,7 +68,6 @@ export const useGame = (difficulty = 'medium') => {
         return prevSnake;
       }
 
-      // Check food collision
       if (checkFoodCollision(newSnake, food)) {
         soundManager.playEatSound();
         setScore(prevScore => {
@@ -84,15 +76,13 @@ export const useGame = (difficulty = 'medium') => {
           return newScore;
         });
         setFood(generateFood(newSnake));
-        return newSnake; // Don't remove tail when eating
+        return newSnake;
       }
 
-      // Remove tail if not eating
       return newSnake.slice(0, -1);
     });
   }, [isPaused, isPlaying, gameOver, food, nextDirection, saveHighScore]);
 
-  // Start game loop
   useEffect(() => {
     if (isPlaying && !gameOver && !isPaused) {
       const speed = DIFFICULTY_LEVELS[difficulty].speed;
@@ -111,7 +101,6 @@ export const useGame = (difficulty = 'medium') => {
     };
   }, [isPlaying, gameOver, isPaused, gameLoop, difficulty]);
 
-  // Handle keyboard input
   const handleKeyPress = useCallback((key) => {
     if (gameOver) return;
 
@@ -157,7 +146,6 @@ export const useGame = (difficulty = 'medium') => {
     }
   }, [gameOver, isPlaying]);
 
-  // Start game
   const startGame = useCallback(() => {
     setSnake(INITIAL_SNAKE);
     setFood(generateFood(INITIAL_SNAKE));
@@ -170,7 +158,6 @@ export const useGame = (difficulty = 'medium') => {
     setIsPlaying(true);
   }, []);
 
-  // Reset game
   const resetGame = useCallback(() => {
     setSnake(INITIAL_SNAKE);
     setFood(generateFood(INITIAL_SNAKE));
@@ -183,7 +170,6 @@ export const useGame = (difficulty = 'medium') => {
     setIsPlaying(false);
   }, []);
 
-  // Toggle pause
   const togglePause = useCallback(() => {
     if (isPlaying && !gameOver) {
       setIsPaused(prev => {
