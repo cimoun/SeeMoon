@@ -10,8 +10,8 @@ const Controls = ({ isPlaying, isPaused, gameOver, onStart, onPause, difficulty,
       )}
       
       {isPlaying && !gameOver && (
-        <button className="pause-button" onClick={onPause}>
-          {isPaused ? 'Продолжить' : 'Пауза'}
+        <button className="pause-button" onClick={onPause} title={isPaused ? 'Продолжить (Пробел)' : 'Пауза (Пробел)'}>
+          {isPaused ? '▶' : '⏸'}
         </button>
       )}
 

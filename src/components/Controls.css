@@ -6,8 +6,7 @@
   margin-top: 20px;
 }
 
-.start-button,
-.pause-button {
+.start-button {
   background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
   color: white;
   border: none;
@@ -23,16 +22,41 @@
   min-width: 200px;
 }
 
-.start-button:hover,
-.pause-button:hover {
+.pause-button {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border: 2px solid #4ade80;
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  font-weight: normal;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+  min-width: auto;
+  width: auto;
+  align-self: flex-end;
+  margin-bottom: -10px;
+  margin-right: 10px;
+}
+
+.start-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(74, 222, 128, 0.6);
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
 }
 
-.start-button:active,
-.pause-button:active {
+.start-button:active {
   transform: translateY(0);
+}
+
+.pause-button:hover {
+  background: rgba(74, 222, 128, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.5);
+}
+
+.pause-button:active {
+  transform: scale(0.95);
 }
 
 .difficulty-selector {
@@ -125,11 +149,17 @@
 }
 
 @media (max-width: 768px) {
-  .start-button,
-  .pause-button {
+  .start-button {
     padding: 12px 40px;
     font-size: 1rem;
     min-width: 180px;
+  }
+  
+  .pause-button {
+    padding: 6px 12px;
+    font-size: 1.2rem;
+    margin-bottom: -5px;
+    margin-right: 5px;
   }
   
   .instructions {

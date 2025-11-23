@@ -30,11 +30,27 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   background-color: #1a1a2e;
   border-radius: 50%;
+  transition: transform 0.1s ease;
+}
+
+.snake-head.direction-right::after {
+  transform: translate(-30%, -50%);
+}
+
+.snake-head.direction-left::after {
+  transform: translate(-70%, -50%);
+}
+
+.snake-head.direction-up::after {
+  transform: translate(-50%, -70%);
+}
+
+.snake-head.direction-down::after {
+  transform: translate(-50%, -30%);
 }
 
 .snake-body {

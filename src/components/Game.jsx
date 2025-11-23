@@ -11,6 +11,7 @@ const Game = () => {
   const {
     snake,
     food,
+    direction,
     score,
     highScore,
     gameOver,
@@ -58,7 +59,7 @@ const Game = () => {
           isPaused={isPaused}
         />
         <div className="game-area">
-          <GameBoard snake={snake} food={food} />
+          <GameBoard snake={snake} food={food} direction={direction} isPlaying={isPlaying} />
           {gameOver && (
             <GameOver 
               score={score} 

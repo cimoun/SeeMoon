@@ -4,9 +4,9 @@ export const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 export const INITIAL_DIRECTION = { x: 1, y: 0 };
 
 export const DIFFICULTY_LEVELS = {
-  easy: { speed: 150, name: 'Легкий' },
-  medium: { speed: 100, name: 'Средний' },
-  hard: { speed: 50, name: 'Сложный' }
+  easy: { speed: 200, name: 'Легкий' },
+  medium: { speed: 120, name: 'Средний' },
+  hard: { speed: 80, name: 'Сложный' }
 };
 
 export const generateFood = (snake) => {
