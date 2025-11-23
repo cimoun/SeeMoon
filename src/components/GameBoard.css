@@ -16,80 +16,19 @@
   height: 20px;
   background-color: #f7fafc;
   border-radius: 4px;
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, box-shadow;
+  transition: background-color 0.2s ease;
 }
 
 .snake-head {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5), 
-              0 2px 8px rgba(102, 126, 234, 0.3),
-              0 0 0 0 rgba(102, 126, 234, 0.4);
+  background: #667eea;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5), 
+              0 0 0 2px rgba(102, 126, 234, 0.2);
   position: relative;
-  transition: grid-column 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              grid-row 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.2s ease,
-              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation: float 3s ease-in-out infinite, fadeIn 0.3s ease-out;
-  transform: translateZ(0);
+  transition: grid-column 0.1s ease-out, grid-row 0.1s ease-out;
   z-index: 10;
-  will-change: transform, box-shadow;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) scale(1);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5), 
-                0 2px 8px rgba(102, 126, 234, 0.3),
-                0 0 0 0 rgba(102, 126, 234, 0.4);
-  }
-  50% {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6), 
-                0 4px 12px rgba(102, 126, 234, 0.4),
-                0 0 0 4px rgba(102, 126, 234, 0.1);
-  }
-}
-
-.snake-head::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
-  opacity: 0.3;
-  filter: blur(4px);
-  z-index: -1;
-  animation: glow 2s ease-in-out infinite;
-}
-
-@keyframes glow {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.1);
-  }
+  border: 2px solid #ffffff;
+  outline: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .snake-head::after {
@@ -97,128 +36,54 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   background-color: #ffffff;
   border-radius: 50%;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.2);
-  }
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .snake-head.direction-right::after {
-  transform: translate(-25%, -50%);
+  transform: translate(-20%, -50%);
 }
 
 .snake-head.direction-left::after {
-  transform: translate(-75%, -50%);
+  transform: translate(-80%, -50%);
 }
 
 .snake-head.direction-up::after {
-  transform: translate(-50%, -75%);
+  transform: translate(-50%, -80%);
 }
 
 .snake-head.direction-down::after {
-  transform: translate(-50%, -25%);
+  transform: translate(-50%, -20%);
 }
 
 .snake-body {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-  border-radius: 5px;
-  transition: grid-column 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              grid-row 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.25s ease;
-  box-shadow: 0 2px 8px rgba(168, 237, 234, 0.4);
-  animation: body-float 2.5s ease-in-out infinite, fadeIn 0.3s ease-out;
-  transform: translateZ(0);
-  position: relative;
-  will-change: transform, box-shadow;
-}
-
-@keyframes body-float {
-  0%, 100% {
-    transform: translateY(0px) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-1px) scale(1.01);
-    opacity: 0.95;
-  }
-}
-
-.snake-body::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-  border-radius: 5px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: #a8edea;
+  border-radius: 4px;
+  transition: grid-column 0.1s ease-out, grid-row 0.1s ease-out;
+  box-shadow: 0 1px 4px rgba(168, 237, 234, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  outline: 1px solid rgba(168, 237, 234, 0.2);
 }
 
 .snake-body {
-  animation-delay: calc(var(--body-index, 0) * 0.1s);
+  animation-delay: calc(var(--body-index, 0) * 0.05s);
 }
 
 .food {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: #f5576c;
   border-radius: 50%;
-  animation: food-float 2s ease-in-out infinite, 
-             food-pulse 1.5s ease-in-out infinite,
-             food-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 16px rgba(245, 87, 108, 0.5),
-              0 2px 8px rgba(245, 87, 108, 0.3),
-              0 0 0 0 rgba(245, 87, 108, 0.4);
-  transition: grid-column 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              grid-row 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.3s ease,
-              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform: translateZ(0);
+  animation: food-pulse 1s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4);
+  transition: grid-column 0.2s linear, grid-row 0.2s linear;
   z-index: 5;
   position: relative;
-  will-change: transform, box-shadow;
-  animation-fill-mode: both;
-}
-
-@keyframes food-appear {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  50% {
-    transform: scale(1.2) rotate(180deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(360deg);
-  }
-}
-
-@keyframes food-float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-    box-shadow: 0 4px 16px rgba(245, 87, 108, 0.5),
-                0 2px 8px rgba(245, 87, 108, 0.3),
-                0 0 0 0 rgba(245, 87, 108, 0.4);
-  }
-  50% {
-    transform: translateY(-3px) rotate(5deg);
-    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6),
-                0 4px 12px rgba(245, 87, 108, 0.4),
-                0 0 0 6px rgba(245, 87, 108, 0.1);
-  }
+  border: 2px solid #ffffff;
 }
 
 @keyframes food-pulse {
@@ -228,7 +93,7 @@
   }
   50% {
     transform: scale(1.1);
-    opacity: 0.9;
+    opacity: 0.95;
   }
 }
 
@@ -239,21 +104,9 @@
   left: 50%;
   width: 4px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  animation: sparkle 1.5s ease-in-out infinite;
-}
-
-@keyframes sparkle {
-  0%, 100% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.5);
-  }
 }
 
 .cell.snake-head,
@@ -278,8 +131,8 @@
   }
   
   .snake-head::after {
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
   }
   
   .food::before {
@@ -302,8 +155,8 @@
   }
   
   .snake-head::after {
-    width: 3px;
-    height: 3px;
+    width: 5px;
+    height: 5px;
   }
   
   .food::before {

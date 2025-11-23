@@ -59,26 +59,26 @@ export const useGame = (difficulty = 'medium') => {
   const gameLoop = useCallback(() => {
     if (isPaused || !isPlaying || gameOver) return;
 
-    setSnake(prevSnake => {
-      let newDirection = directionRef.current;
-      
-      if (inputBufferRef.current.length > 0) {
-        const bufferedDirection = inputBufferRef.current[0];
-        if (isValidDirection(bufferedDirection, directionRef.current)) {
-          newDirection = bufferedDirection;
-          inputBufferRef.current.shift();
-          setNextDirection(newDirection);
-          setDirection(newDirection);
-        }
-      } else if (nextDirection.x !== directionRef.current.x || nextDirection.y !== directionRef.current.y) {
-        if (isValidDirection(nextDirection, directionRef.current)) {
-          newDirection = nextDirection;
-          setDirection(newDirection);
-        }
+    let newDirection = directionRef.current;
+    
+    if (inputBufferRef.current.length > 0) {
+      const bufferedDirection = inputBufferRef.current[0];
+      if (isValidDirection(bufferedDirection, directionRef.current)) {
+        newDirection = bufferedDirection;
+        inputBufferRef.current.shift();
+        directionRef.current = newDirection;
+        setNextDirection(newDirection);
+        setDirection(newDirection);
       }
-      
-      directionRef.current = newDirection;
+    } else if (nextDirection.x !== directionRef.current.x || nextDirection.y !== directionRef.current.y) {
+      if (isValidDirection(nextDirection, directionRef.current)) {
+        newDirection = nextDirection;
+        directionRef.current = newDirection;
+        setDirection(newDirection);
+      }
+    }
 
+    setSnake(prevSnake => {
       const newSnake = moveSnake(prevSnake, newDirection);
       const head = newSnake[0];
 
@@ -167,8 +167,6 @@ export const useGame = (difficulty = 'medium') => {
       if (newDirection.x !== currentDir.x || newDirection.y !== currentDir.y) {
         if (inputBufferRef.current.length === 0) {
           setNextDirection(newDirection);
-          setDirection(newDirection);
-          directionRef.current = newDirection;
         } else {
           const lastBuffered = inputBufferRef.current[inputBufferRef.current.length - 1];
           if (!lastBuffered || (lastBuffered.x !== newDirection.x || lastBuffered.y !== newDirection.y)) {
