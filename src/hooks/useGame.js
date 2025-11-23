@@ -21,8 +21,16 @@ export const useGame = (difficulty = 'medium') => {
   const [direction, setDirection] = useState(INITIAL_DIRECTION);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(() => {
-    const saved = localStorage.getItem(HIGH_SCORE_KEY);
-    return saved ? parseInt(saved, 10) : 0;
+    try {
+      const saved = localStorage.getItem(HIGH_SCORE_KEY);
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        return !isNaN(parsed) && parsed >= 0 ? parsed : 0;
+      }
+    } catch {
+      // localStorage might not be available or accessible
+    }
+    return 0;
   });
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -37,17 +45,14 @@ export const useGame = (difficulty = 'medium') => {
     directionRef.current = direction;
   }, [direction]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem(HIGH_SCORE_KEY);
-    if (saved) {
-      setHighScore(parseInt(saved, 10));
-    }
-  }, []);
-
   const saveHighScore = useCallback((newScore) => {
     if (newScore > highScore) {
       setHighScore(newScore);
-      localStorage.setItem(HIGH_SCORE_KEY, newScore.toString());
+      try {
+        localStorage.setItem(HIGH_SCORE_KEY, newScore.toString());
+      } catch {
+        // localStorage might not be available or accessible
+      }
     }
   }, [highScore]);
 
@@ -174,7 +179,7 @@ export const useGame = (difficulty = 'medium') => {
         }
       }
     }
-  }, [gameOver, isPlaying]);
+  }, [gameOver, isPlaying, nextDirection]);
 
   const startGame = useCallback(() => {
     setSnake(INITIAL_SNAKE);
