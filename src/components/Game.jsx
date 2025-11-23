@@ -59,7 +59,7 @@ const Game = () => {
           isPaused={isPaused}
         />
         <div className="game-area">
-          <GameBoard snake={snake} food={food} direction={direction} isPlaying={isPlaying} />
+          <GameBoard snake={snake} food={food} direction={direction} />
           {gameOver && (
             <GameOver 
               score={score} 
