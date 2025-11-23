@@ -1,7 +1,7 @@
 import { GRID_SIZE, CELL_SIZE } from '../utils/gameLogic';
 import './GameBoard.css';
 
-const GameBoard = ({ snake, food, direction, isPlaying }) => {
+const GameBoard = ({ snake, food, direction }) => {
   const getDirectionClass = () => {
     if (!direction) return '';
     if (direction.x === 1) return 'direction-right';
