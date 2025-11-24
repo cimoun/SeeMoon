@@ -107,12 +107,12 @@
 }
 
 .snake-body {
-  background: #5a67d8; /* Darker than previous, matches head tone but lighter */
+  background: #38b2ac; /* Teal-500 for better contrast */
   border-radius: 4px;
   transition: grid-column 0.1s ease-out, grid-row 0.1s ease-out;
-  box-shadow: 0 1px 4px rgba(90, 103, 216, 0.4);
+  box-shadow: 0 1px 4px rgba(56, 178, 172, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  outline: 1px solid rgba(90, 103, 216, 0.2);
+  outline: 1px solid rgba(56, 178, 172, 0.2);
 }
 
 .snake-body {

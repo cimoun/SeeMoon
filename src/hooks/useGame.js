@@ -195,7 +195,7 @@ export const useGame = (difficulty = 'medium') => {
                 // Also push to buffer to ensure it's picked up by game loop
                 inputBufferRef.current.push(newDirection);
              }
-          } else if (inputBufferRef.current.length < 2) {
+          } else if (inputBufferRef.current.length < 3) {
             const lastBuffered = inputBufferRef.current[inputBufferRef.current.length - 1];
             if (!lastBuffered || (lastBuffered.x !== newDirection.x || lastBuffered.y !== newDirection.y)) {
               inputBufferRef.current.push(newDirection);
