@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { GRID_SIZE, CELL_SIZE } from '../utils/gameLogic';
 import './GameBoard.css';
 
@@ -49,12 +50,16 @@ const GameBoard = ({ snake, food, direction }) => {
     );
   };
 
-  const cells = [];
-  for (let y = 0; y < GRID_SIZE; y++) {
-    for (let x = 0; x < GRID_SIZE; x++) {
-      cells.push(renderCell(x, y));
+  const cells = useMemo(() => {
+    const cellArray = [];
+    for (let y = 0; y < GRID_SIZE; y++) {
+      for (let x = 0; x < GRID_SIZE; x++) {
+        cellArray.push(renderCell(x, y));
+      }
     }
-  }
+    return cellArray;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snake, food, direction]);
 
   return (
     <div className="game-board">
