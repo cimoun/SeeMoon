@@ -1,0 +1,50 @@
+.swimlanes-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.swimlane-header {
+  position: absolute;
+  background: #e3f2fd;
+  border-right: 2px solid #1976d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1976d2;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.swimlane-header-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+.swimlane-background {
+  position: absolute;
+  border-left: 2px solid #1976d2;
+  border-right: 2px solid #1976d2;
+}
+
+.swimlane-background.even {
+  background: rgba(227, 242, 253, 0.3);
+}
+
+.swimlane-background.odd {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.swimlane-divider {
+  position: absolute;
+  height: 2px;
+  background: #1976d2;
+  opacity: 0.5;
+}

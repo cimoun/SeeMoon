@@ -1,12 +1,12 @@
 // Корневой компонент приложения
 
-import Game from './components/Game/Game';
+import { BpmnComposer } from './bpmn/components/BpmnComposer';
 import './App.css';
 
 function App() {
   return (
     <div className="app">
-      <Game />
+      <BpmnComposer />
     </div>
   );
 }
