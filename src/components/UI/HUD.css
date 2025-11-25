@@ -1,0 +1,141 @@
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(180deg, rgba(10, 10, 15, 0.95) 0%, rgba(10, 10, 15, 0.8) 100%);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  min-height: 60px;
+}
+
+.hud-left,
+.hud-right {
+  display: flex;
+  gap: 30px;
+}
+
+.hud-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hud-value {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.hud-value.level {
+  color: #ffff00;
+  text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+}
+
+.hud-value.lives {
+  display: flex;
+  gap: 4px;
+}
+
+.life-icon {
+  color: #ff0066;
+  text-shadow: 0 0 8px rgba(255, 0, 102, 0.6);
+  font-size: 16px;
+}
+
+.hud-value.score {
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.hud-value.high-score {
+  color: #ff00ff;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.combo-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+.combo-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffff00;
+  text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+}
+
+.combo-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #ffff00;
+}
+
+.pause-indicator {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 600px) {
+  .hud {
+    padding: 10px 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hud-left,
+  .hud-right {
+    gap: 15px;
+  }
+
+  .hud-center {
+    position: static;
+    transform: none;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+
+  .hud-value {
+    font-size: 16px;
+  }
+
+  .hud-label {
+    font-size: 9px;
+  }
+}

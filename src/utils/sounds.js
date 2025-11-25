@@ -1,20 +1,31 @@
+// Звуковая система для Neon Breakout
+
 class SoundManager {
   constructor() {
     this.audioContext = null;
     this.enabled = true;
-    this.initAudioContext();
+    this.initialized = false;
   }
 
-  initAudioContext() {
+  init() {
+    if (this.initialized) return;
+
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      this.initialized = true;
     } catch {
-      console.warn('Web Audio API not supported');
+      console.warn('Web Audio API не поддерживается');
       this.enabled = false;
     }
   }
 
-  playTone(frequency, duration, type = 'sine') {
+  resume() {
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+  }
+
+  playTone(frequency, duration, type = 'sine', volume = 0.3) {
     if (!this.enabled || !this.audioContext) return;
 
     try {
@@ -27,36 +38,63 @@ class SoundManager {
       oscillator.frequency.value = frequency;
       oscillator.type = type;
 
-      gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+      const now = this.audioContext.currentTime;
+      gainNode.gain.setValueAtTime(volume, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
 
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + duration);
+      oscillator.start(now);
+      oscillator.stop(now + duration);
     } catch {
-      // Silently ignore audio context errors
+      // Игнорируем ошибки аудио
     }
   }
 
-  playEatSound() {
-    // Softer sound: lower frequency, sine wave, gentle envelope
-    this.playTone(330, 0.05, 'sine'); 
-    setTimeout(() => this.playTone(440, 0.05, 'sine'), 40);
+  playHitPaddle() {
+    this.playTone(440, 0.08, 'sine', 0.2);
   }
 
-  playGameOverSound() {
-    this.playTone(220, 0.3, 'triangle');
-    setTimeout(() => this.playTone(196, 0.3, 'triangle'), 150);
-    setTimeout(() => this.playTone(165, 0.4, 'triangle'), 300);
+  playHitBlock() {
+    this.playTone(587, 0.06, 'square', 0.15);
+    setTimeout(() => this.playTone(698, 0.06, 'square', 0.1), 30);
   }
 
-  playPauseSound() {
-    this.playTone(330, 0.15, 'sine');
+  playHitWall() {
+    this.playTone(330, 0.05, 'triangle', 0.1);
+  }
+
+  playPowerUp() {
+    this.playTone(523, 0.1, 'sine', 0.25);
+    setTimeout(() => this.playTone(659, 0.1, 'sine', 0.2), 80);
+    setTimeout(() => this.playTone(784, 0.15, 'sine', 0.15), 160);
+  }
+
+  playLoseLife() {
+    this.playTone(294, 0.2, 'sawtooth', 0.3);
+    setTimeout(() => this.playTone(220, 0.3, 'sawtooth', 0.25), 150);
+  }
+
+  playGameOver() {
+    this.playTone(262, 0.25, 'triangle', 0.3);
+    setTimeout(() => this.playTone(220, 0.25, 'triangle', 0.25), 200);
+    setTimeout(() => this.playTone(196, 0.25, 'triangle', 0.2), 400);
+    setTimeout(() => this.playTone(165, 0.4, 'triangle', 0.15), 600);
+  }
+
+  playWin() {
+    const notes = [523, 587, 659, 784, 880, 1047];
+    notes.forEach((freq, i) => {
+      setTimeout(() => this.playTone(freq, 0.15, 'sine', 0.2), i * 100);
+    });
+  }
+
+  playLaunch() {
+    this.playTone(392, 0.1, 'sine', 0.2);
   }
 
   toggle() {
     this.enabled = !this.enabled;
+    return this.enabled;
   }
 }
 
 export const soundManager = new SoundManager();
-
