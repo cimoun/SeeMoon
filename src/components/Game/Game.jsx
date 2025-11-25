@@ -22,6 +22,7 @@ const Game = () => {
     getBalls,
     getBlocks,
     getPowerUps,
+    getLasers,
     startGame,
     launch,
     togglePause,
@@ -100,6 +101,7 @@ const Game = () => {
               balls={getBalls()}
               blocks={getBlocks()}
               powerUps={getPowerUps()}
+              lasers={getLasers()}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -117,7 +119,7 @@ const Game = () => {
           </div>
 
           <div className="game-controls-hint">
-            <span className="desktop-hint">← → / A D - движение | ПРОБЕЛ - запуск/пауза</span>
+            <span className="desktop-hint">← → / A D - движение | ПРОБЕЛ - запуск/пауза | ↑ / W - лазер</span>
             <span className="mobile-hint">Касайтесь экрана для управления</span>
           </div>
         </>

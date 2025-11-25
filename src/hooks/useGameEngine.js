@@ -9,7 +9,8 @@ import {
   POWERUP_TYPES,
   POWERUP_DROP_CHANCE,
   COMBO_TIMEOUT,
-  COMBO_MULTIPLIER
+  COMBO_MULTIPLIER,
+  LASER_COOLDOWN
 } from '../utils/constants';
 import {
   createPaddle,
@@ -19,7 +20,11 @@ import {
   updatePowerUp,
   isPowerUpOutOfBounds,
   cloneBall,
-  createPowerUp
+  createPowerUp,
+  createLaser,
+  updateLaser,
+  isLaserOutOfBounds,
+  attachBallToPaddle
 } from '../engine/entities';
 import {
   checkWallCollision,
@@ -27,7 +32,8 @@ import {
   checkPaddleCollision,
   checkBlockCollision,
   reflectBall,
-  checkPowerUpCollision
+  checkPowerUpCollision,
+  checkLaserBlockCollision
 } from '../engine/physics';
 import { generateLevel, isLevelComplete, getTotalLevels } from '../engine/levels';
 import { soundManager } from '../utils/sounds';
@@ -68,12 +74,14 @@ export const useGameEngine = () => {
   const ballsRef = useRef([createBall(paddleRef.current.x, paddleRef.current.width)]);
   const blocksRef = useRef([]);
   const powerUpsRef = useRef([]);
+  const lasersRef = useRef([]);
   const activeEffectsRef = useRef({});
 
   // Управление
-  const keysRef = useRef({ left: false, right: false });
+  const keysRef = useRef({ left: false, right: false, fire: false });
   const animationFrameRef = useRef(null);
   const lastTimeRef = useRef(0);
+  const lastLaserTimeRef = useRef(0);
   const comboTimerRef = useRef(null);
 
   // Состояние для рендера
@@ -89,6 +97,7 @@ export const useGameEngine = () => {
     ballsRef.current = [createBall(paddleRef.current.x, paddleRef.current.width)];
     blocksRef.current = generateLevel(levelNum);
     powerUpsRef.current = [];
+    lasersRef.current = [];
     activeEffectsRef.current = {};
     setCombo(0);
   }, []);
@@ -107,11 +116,30 @@ export const useGameEngine = () => {
   // Запуск мяча
   const launch = useCallback(() => {
     if (ballsRef.current.some(ball => ball.attached)) {
-      ballsRef.current = ballsRef.current.map(ball =>
-        ball.attached ? launchBall(ball) : ball
-      );
+      ballsRef.current = ballsRef.current.map(ball => {
+        if (ball.attached) {
+          const launched = launchBall(ball);
+          // При Catch после запуска деактивируем его
+          paddleRef.current.hasCatch = false;
+          return launched;
+        }
+        return ball;
+      });
       soundManager.playLaunch();
     }
+  }, []);
+
+  // Стрельба лазером
+  const fireLaser = useCallback(() => {
+    const paddle = paddleRef.current;
+    if (!paddle.hasLaser) return;
+
+    const now = Date.now();
+    if (now - lastLaserTimeRef.current < LASER_COOLDOWN) return;
+
+    lastLaserTimeRef.current = now;
+    lasersRef.current.push(createLaser(paddle));
+    soundManager.playHitWall(); // Используем как звук выстрела
   }, []);
 
   // Пауза
@@ -203,12 +231,58 @@ export const useGameEngine = () => {
           }));
         }, powerUp.type.duration);
         break;
+
+      case 'catch':
+        paddleRef.current.hasCatch = true;
+        break;
+
+      case 'laser':
+        paddleRef.current.hasLaser = true;
+        if (activeEffectsRef.current.laser) {
+          clearTimeout(activeEffectsRef.current.laser);
+        }
+        activeEffectsRef.current.laser = setTimeout(() => {
+          paddleRef.current.hasLaser = false;
+        }, powerUp.type.duration);
+        break;
+
+      case 'life':
+        setLives(prev => prev + 1);
+        break;
+
+      case 'mega':
+        ballsRef.current = ballsRef.current.map(ball => ({
+          ...ball,
+          isMega: true
+        }));
+        if (activeEffectsRef.current.mega) {
+          clearTimeout(activeEffectsRef.current.mega);
+        }
+        activeEffectsRef.current.mega = setTimeout(() => {
+          ballsRef.current = ballsRef.current.map(ball => ({
+            ...ball,
+            isMega: false
+          }));
+        }, powerUp.type.duration);
+        break;
     }
   }, []);
 
   // Потеря жизни
   const loseLife = useCallback(() => {
     soundManager.playLoseLife();
+
+    // Сбрасываем эффекты платформы
+    paddleRef.current.hasCatch = false;
+    paddleRef.current.hasLaser = false;
+    paddleRef.current.width = paddleRef.current.originalWidth;
+
+    // Очищаем таймеры эффектов
+    Object.values(activeEffectsRef.current).forEach(timer => {
+      if (timer) clearTimeout(timer);
+    });
+    activeEffectsRef.current = {};
+
     setLives(prev => {
       const newLives = prev - 1;
       if (newLives <= 0) {
@@ -218,6 +292,7 @@ export const useGameEngine = () => {
         // Сброс мяча
         ballsRef.current = [createBall(paddleRef.current.x, paddleRef.current.width)];
         powerUpsRef.current = [];
+        lasersRef.current = [];
       }
       return newLives;
     });
@@ -259,6 +334,39 @@ export const useGameEngine = () => {
       paddle.x = Math.min(CANVAS_WIDTH - paddle.width, paddle.x + PADDLE_SPEED);
     }
 
+    // Автоматическая стрельба лазером
+    if (keysRef.current.fire && paddle.hasLaser) {
+      fireLaser();
+    }
+
+    // Обновление лазеров
+    lasersRef.current = lasersRef.current.filter(laser => {
+      const updated = updateLaser(laser);
+      laser.y = updated.y;
+
+      if (isLaserOutOfBounds(laser)) {
+        return false;
+      }
+
+      // Проверка столкновений лазера с блоками
+      for (const block of blocksRef.current) {
+        if (block.destroyed || block.indestructible) continue;
+
+        if (checkLaserBlockCollision(laser, block)) {
+          block.health--;
+          if (block.health <= 0) {
+            block.destroyed = true;
+            handleBlockDestroyed(block);
+          } else {
+            soundManager.playHitBlock();
+          }
+          return false; // Удаляем лазер после попадания
+        }
+      }
+
+      return true;
+    });
+
     // Обновление мячей
     let ballsToRemove = [];
     ballsRef.current = ballsRef.current.map((ball, index) => {
@@ -281,9 +389,16 @@ export const useGameEngine = () => {
 
       // Столкновение с платформой
       const paddleResult = checkPaddleCollision(updatedBall, paddle);
-      updatedBall = paddleResult.ball;
       if (paddleResult.hit) {
         soundManager.playHitPaddle();
+
+        // Если активен Catch - прилепляем мяч
+        if (paddle.hasCatch) {
+          updatedBall = attachBallToPaddle(updatedBall, paddle);
+        } else {
+          updatedBall = paddleResult.ball;
+        }
+        return updatedBall;
       }
 
       // Столкновение с блоками
@@ -292,16 +407,37 @@ export const useGameEngine = () => {
 
         const blockResult = checkBlockCollision(updatedBall, block);
         if (blockResult.hit) {
-          updatedBall = reflectBall(updatedBall, blockResult.side);
-          block.health--;
-
-          if (block.health <= 0) {
-            block.destroyed = true;
-            handleBlockDestroyed(block);
-          } else {
-            soundManager.playHitBlock();
+          // Mega Ball не отскакивает и проходит сквозь обычные блоки
+          if (!updatedBall.isMega) {
+            updatedBall = reflectBall(updatedBall, blockResult.side);
           }
-          break;
+
+          // Неразрушаемые блоки не получают урон
+          if (!block.indestructible) {
+            // Mega Ball уничтожает за 1 удар
+            if (updatedBall.isMega) {
+              block.health = 0;
+            } else {
+              block.health--;
+            }
+
+            if (block.health <= 0) {
+              block.destroyed = true;
+              handleBlockDestroyed(block);
+            } else {
+              soundManager.playHitBlock();
+            }
+          } else {
+            // От неразрушаемых всегда отскакиваем
+            if (updatedBall.isMega) {
+              updatedBall = reflectBall(updatedBall, blockResult.side);
+            }
+            soundManager.playHitWall();
+          }
+
+          if (!updatedBall.isMega) {
+            break; // Обычный мяч отскакивает после первого столкновения
+          }
         }
       }
 
@@ -341,7 +477,7 @@ export const useGameEngine = () => {
 
     forceRender();
     animationFrameRef.current = requestAnimationFrame(gameLoop);
-  }, [gameState, handleBlockDestroyed, applyPowerUp, loseLife, nextLevel, forceRender]);
+  }, [gameState, handleBlockDestroyed, applyPowerUp, loseLife, nextLevel, forceRender, fireLaser]);
 
   // Запуск игрового цикла
   useEffect(() => {
@@ -380,6 +516,14 @@ export const useGameEngine = () => {
             togglePause();
           }
           break;
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+          keysRef.current.fire = true;
+          if (gameState === GAME_STATES.PLAYING && paddleRef.current.hasLaser) {
+            fireLaser();
+          }
+          break;
         case 'Escape':
           if (gameState === GAME_STATES.PLAYING || gameState === GAME_STATES.PAUSED) {
             togglePause();
@@ -400,6 +544,11 @@ export const useGameEngine = () => {
         case 'D':
           keysRef.current.right = false;
           break;
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+          keysRef.current.fire = false;
+          break;
       }
     };
 
@@ -410,7 +559,7 @@ export const useGameEngine = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [gameState, launch, togglePause]);
+  }, [gameState, launch, togglePause, fireLaser]);
 
   // Функция перемещения платформы для touch
   const movePaddle = useCallback((x) => {
@@ -433,6 +582,7 @@ export const useGameEngine = () => {
     getBalls: () => ballsRef.current,
     getBlocks: () => blocksRef.current,
     getPowerUps: () => powerUpsRef.current,
+    getLasers: () => lasersRef.current,
 
     // Действия
     startGame,
@@ -440,6 +590,7 @@ export const useGameEngine = () => {
     togglePause,
     returnToMenu,
     movePaddle,
+    fireLaser,
 
     // Для принудительного рендера
     renderTrigger

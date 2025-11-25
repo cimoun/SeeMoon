@@ -164,3 +164,15 @@ export const checkPowerUpCollision = (powerUp, paddle) => {
     powerUp.x <= paddle.x + paddle.width
   );
 };
+
+// Столкновение лазера с блоком
+export const checkLaserBlockCollision = (laser, block) => {
+  if (block.destroyed) return false;
+
+  return (
+    laser.x < block.x + BLOCK_WIDTH &&
+    laser.x + laser.width > block.x &&
+    laser.y < block.y + BLOCK_HEIGHT &&
+    laser.y + laser.height > block.y
+  );
+};

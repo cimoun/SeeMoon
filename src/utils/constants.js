@@ -44,6 +44,13 @@ export const BLOCK_TYPES = {
     points: 50,
     color: '#ff0066',
     glowColor: 'rgba(255, 0, 102, 0.6)'
+  },
+  INDESTRUCTIBLE: {
+    health: Infinity,
+    points: 0,
+    color: '#444455',
+    glowColor: 'rgba(68, 68, 85, 0.4)',
+    indestructible: true
   }
 };
 
@@ -66,12 +73,42 @@ export const POWERUP_TYPES = {
     color: '#00aaff',
     duration: 8000,
     symbol: 'S'
+  },
+  CATCH: {
+    id: 'catch',
+    color: '#00ff88',
+    duration: null,
+    symbol: 'C'
+  },
+  LASER: {
+    id: 'laser',
+    color: '#ff0000',
+    duration: 10000,
+    symbol: 'L'
+  },
+  EXTRA_LIFE: {
+    id: 'life',
+    color: '#ff00ff',
+    duration: null,
+    symbol: '+'
+  },
+  MEGA_BALL: {
+    id: 'mega',
+    color: '#ffffff',
+    duration: 5000,
+    symbol: '★'
   }
 };
 
 export const POWERUP_SIZE = 24;
 export const POWERUP_SPEED = 3;
-export const POWERUP_DROP_CHANCE = 0.15;
+export const POWERUP_DROP_CHANCE = 0.18;
+
+// Лазер
+export const LASER_WIDTH = 4;
+export const LASER_HEIGHT = 20;
+export const LASER_SPEED = 12;
+export const LASER_COOLDOWN = 200;
 
 // Игровые настройки
 export const INITIAL_LIVES = 3;
