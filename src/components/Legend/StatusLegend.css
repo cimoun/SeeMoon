@@ -1,0 +1,21 @@
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+}
+
+.status-legend__item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.status-legend__swatch {
+  width: 20px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
