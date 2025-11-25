@@ -14,21 +14,10 @@ html, body {
 
 body {
   font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  background: #0a0a0f;
-  color: #ffffff;
+  background: #f5f5f5;
+  color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* Отключаем выделение для игрового интерфейса */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-
-  /* Отключаем подсветку тапа на мобильных */
-  -webkit-tap-highlight-color: transparent;
-
-  /* Предотвращаем масштабирование на мобильных */
-  touch-action: manipulation;
 }
 
 #root {
@@ -41,48 +30,27 @@ body {
   min-height: 100vh;
 }
 
-/* Скрываем скроллбар но оставляем функциональность */
+/* Стилизация скроллбара */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0f;
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1a1a2e;
+  background: #888;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a2a4e;
+  background: #555;
 }
 
-/* Убираем синюю обводку у элементов при фокусе */
+/* Фокус для доступности */
 *:focus {
-  outline: none;
-}
-
-/* Анимации для всего приложения */
-@keyframes glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 5px currentColor);
-  }
-  50% {
-    filter: drop-shadow(0 0 15px currentColor);
-  }
-}
-
-/* Утилитарные классы */
-.text-glow-cyan {
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-.text-glow-magenta {
-  text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
-}
-
-.text-glow-yellow {
-  text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
