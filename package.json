@@ -1,9 +1,9 @@
 {
-  "name": "neon-breakout",
+  "name": "bpmn-diagram-generator",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Neon Breakout - A modern arcade game with cyberpunk aesthetics",
+  "description": "BPMN 2.0 Diagram Generator - Create professional process diagrams from text descriptions",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "html-to-image": "^1.11.11",
+    "jspdf": "^2.5.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

@@ -1,0 +1,132 @@
+/* BPMN Element Base Styles */
+.bpmn-element {
+  cursor: pointer;
+  transition: filter 150ms ease;
+}
+
+.bpmn-element:hover {
+  filter: brightness(1.1);
+}
+
+.bpmn-element.selected .bpmn-shape {
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.bpmn-shape {
+  stroke-width: 2;
+  transition: all 150ms ease;
+}
+
+.bpmn-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  fill: var(--text-primary);
+}
+
+.bpmn-gateway-label {
+  font-size: 10px;
+  fill: var(--text-secondary);
+}
+
+/* Start Event */
+.bpmn-start-event .bpmn-shape {
+  fill: rgba(126, 231, 135, 0.15);
+  stroke: var(--bpmn-event-start);
+}
+
+.bpmn-start-event .bpmn-shape-inner {
+  stroke: var(--bpmn-event-start);
+  stroke-width: 1;
+}
+
+/* End Event */
+.bpmn-end-event .bpmn-shape {
+  fill: rgba(248, 81, 73, 0.15);
+  stroke: var(--bpmn-event-end);
+  stroke-width: 3;
+}
+
+.bpmn-end-event .bpmn-shape-inner {
+  fill: var(--bpmn-event-end);
+}
+
+/* Intermediate Event */
+.bpmn-intermediate-event .bpmn-shape {
+  fill: rgba(210, 153, 34, 0.15);
+  stroke: var(--bpmn-event-intermediate);
+}
+
+.bpmn-intermediate-event .bpmn-shape-inner {
+  stroke: var(--bpmn-event-intermediate);
+  stroke-width: 1;
+}
+
+/* Task */
+.bpmn-task .bpmn-shape {
+  fill: var(--bg-tertiary);
+  stroke: var(--bpmn-task);
+}
+
+.bpmn-task-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Subprocess */
+.bpmn-subprocess .bpmn-shape {
+  fill: var(--bg-tertiary);
+  stroke: var(--bpmn-subprocess);
+}
+
+.bpmn-subprocess-icon {
+  fill: none;
+  stroke: var(--bpmn-subprocess);
+  stroke-width: 1.5;
+}
+
+.bpmn-subprocess-icon-line {
+  stroke: var(--bpmn-subprocess);
+  stroke-width: 1.5;
+}
+
+/* XOR Gateway */
+.bpmn-xor-gateway .bpmn-shape {
+  fill: rgba(210, 153, 34, 0.15);
+  stroke: var(--bpmn-gateway);
+}
+
+.bpmn-gateway-symbol {
+  stroke: var(--bpmn-gateway);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Parallel Gateway */
+.bpmn-parallel-gateway .bpmn-shape {
+  fill: rgba(210, 153, 34, 0.15);
+  stroke: var(--bpmn-gateway);
+}
+
+/* Inclusive Gateway */
+.bpmn-inclusive-gateway .bpmn-shape {
+  fill: rgba(210, 153, 34, 0.15);
+  stroke: var(--bpmn-gateway);
+}
+
+.bpmn-gateway-symbol-circle {
+  fill: none;
+  stroke: var(--bpmn-gateway);
+  stroke-width: 3;
+}

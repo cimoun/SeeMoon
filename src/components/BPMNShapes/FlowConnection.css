@@ -1,0 +1,48 @@
+/* Flow Connection Styles */
+.bpmn-flow {
+  pointer-events: none;
+}
+
+.flow-line {
+  stroke: var(--text-secondary);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 150ms ease;
+}
+
+.bpmn-flow.return-flow .flow-line {
+  stroke: var(--accent-warning);
+  stroke-dasharray: 6 3;
+  marker-end: url(#arrowhead-return);
+}
+
+.bpmn-flow.selected .flow-line {
+  stroke: var(--accent-primary);
+  stroke-width: 2;
+}
+
+.flow-label-group {
+  pointer-events: auto;
+}
+
+.flow-label-bg {
+  fill: var(--bg-secondary);
+  stroke: var(--border-default);
+  stroke-width: 1;
+}
+
+.flow-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  fill: var(--text-secondary);
+}
+
+.bpmn-flow:hover .flow-line {
+  stroke: var(--accent-primary);
+}
+
+.bpmn-flow:hover .flow-label {
+  fill: var(--text-primary);
+}

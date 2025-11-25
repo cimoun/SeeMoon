@@ -27,7 +27,10 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': ['warn', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^(React|App|Header|Sidebar|DiagramCanvas|JsonEditor|ExportPanel|BPMNElement|FlowConnection|FlowMarkers|Swimlane)$'
+      }],
     },
   },
 ];
