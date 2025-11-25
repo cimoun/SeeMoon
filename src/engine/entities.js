@@ -10,7 +10,10 @@ import {
   POWERUP_SIZE,
   POWERUP_SPEED,
   CANVAS_WIDTH,
-  CANVAS_HEIGHT
+  CANVAS_HEIGHT,
+  LASER_WIDTH,
+  LASER_HEIGHT,
+  LASER_SPEED
 } from '../utils/constants';
 
 // Создание платформы
@@ -19,7 +22,9 @@ export const createPaddle = () => ({
   y: CANVAS_HEIGHT - PADDLE_Y_OFFSET,
   width: PADDLE_WIDTH,
   height: PADDLE_HEIGHT,
-  originalWidth: PADDLE_WIDTH
+  originalWidth: PADDLE_WIDTH,
+  hasLaser: false,
+  hasCatch: false
 });
 
 // Создание мяча
@@ -30,7 +35,8 @@ export const createBall = (paddleX, paddleWidth) => ({
   dx: 0,
   dy: 0,
   speed: BALL_INITIAL_SPEED,
-  attached: true
+  attached: true,
+  isMega: false
 });
 
 // Запуск мяча
@@ -56,6 +62,7 @@ export const createBlock = (x, y, type) => {
     points: blockType.points,
     color: blockType.color,
     glowColor: blockType.glowColor,
+    indestructible: blockType.indestructible || false,
     destroyed: false
   };
 };
@@ -69,6 +76,15 @@ export const createPowerUp = (x, y, type) => ({
   height: POWERUP_SIZE,
   dy: POWERUP_SPEED,
   collected: false
+});
+
+// Создание лазера
+export const createLaser = (paddle) => ({
+  x: paddle.x + paddle.width / 2 - LASER_WIDTH / 2,
+  y: paddle.y - LASER_HEIGHT,
+  width: LASER_WIDTH,
+  height: LASER_HEIGHT,
+  dy: -LASER_SPEED
 });
 
 // Обновление позиции мяча
@@ -94,9 +110,20 @@ export const updatePowerUp = (powerUp) => ({
   y: powerUp.y + powerUp.dy
 });
 
+// Обновление позиции лазера
+export const updateLaser = (laser) => ({
+  ...laser,
+  y: laser.y + laser.dy
+});
+
 // Проверка выхода power-up за границы
 export const isPowerUpOutOfBounds = (powerUp) => {
   return powerUp.y > CANVAS_HEIGHT;
+};
+
+// Проверка выхода лазера за границы
+export const isLaserOutOfBounds = (laser) => {
+  return laser.y + laser.height < 0;
 };
 
 // Клонирование мяча для мультибола
@@ -108,6 +135,17 @@ export const cloneBall = (ball) => {
   return {
     ...ball,
     dx: Math.cos(newAngle) * ball.speed,
-    dy: Math.sin(newAngle) * ball.speed
+    dy: Math.sin(newAngle) * ball.speed,
+    isMega: ball.isMega
   };
 };
+
+// Присоединение мяча к платформе (для Catch)
+export const attachBallToPaddle = (ball, paddle) => ({
+  ...ball,
+  x: paddle.x + paddle.width / 2,
+  y: paddle.y - ball.radius - 2,
+  dx: 0,
+  dy: 0,
+  attached: true
+});

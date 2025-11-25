@@ -36,6 +36,12 @@ const StartScreen = ({ onStart, highScore }) => {
               <span className="keys">ПРОБЕЛ</span>
               <span className="instruction-desc">Запуск / Пауза</span>
             </div>
+            <div className="instruction-item">
+              <span className="keys">↑</span>
+              <span>или</span>
+              <span className="keys">W</span>
+              <span className="instruction-desc">Стрельба лазером</span>
+            </div>
           </div>
           <p className="mobile-hint">На мобильных: касание и свайп по экрану</p>
         </div>
@@ -54,6 +60,22 @@ const StartScreen = ({ onStart, highScore }) => {
             <div className="powerup-item">
               <span className="powerup-icon" style={{ background: '#00aaff' }}>S</span>
               <span>Замедление</span>
+            </div>
+            <div className="powerup-item">
+              <span className="powerup-icon" style={{ background: '#00ff88' }}>C</span>
+              <span>Прилипание мяча</span>
+            </div>
+            <div className="powerup-item">
+              <span className="powerup-icon" style={{ background: '#ff0000' }}>L</span>
+              <span>Лазер</span>
+            </div>
+            <div className="powerup-item">
+              <span className="powerup-icon" style={{ background: '#ff00ff' }}>+</span>
+              <span>Доп. жизнь</span>
+            </div>
+            <div className="powerup-item">
+              <span className="powerup-icon" style={{ background: '#ffffff', color: '#000000' }}>★</span>
+              <span>Мега-мяч</span>
             </div>
           </div>
         </div>
