@@ -1,8 +1,14 @@
-import Game from './components/Game'
-import './App.css'
+// Корневой компонент приложения
+
+import Game from './components/Game/Game';
+import './App.css';
 
 function App() {
-  return <Game />
+  return (
+    <div className="app">
+      <Game />
+    </div>
+  );
 }
 
-export default App
+export default App;
