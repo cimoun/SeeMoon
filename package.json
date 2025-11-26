@@ -1,9 +1,9 @@
 {
-  "name": "bpmn-composer",
+  "name": "bpmn-diagram-generator",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "BPMN 2.0 Diagram Generator from Text Description",
+  "description": "BPMN 2.0 Diagram Generator - Create professional process diagrams from text descriptions",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,11 +13,8 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@xyflow/react": "^12.0.0",
-    "dagre": "^0.8.5",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
-    "file-saver": "^2.0.5"
+    "html-to-image": "^1.11.11",
+    "jspdf": "^2.5.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
