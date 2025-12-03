@@ -1,6 +1,4 @@
-import { cors } from './_lib/db.js';
-
 export default function handler(req, res) {
-  cors(res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 }

@@ -1,41 +1,44 @@
-import { db, getAuthUser, cors } from '../../_lib/db.js';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'seemoon-demo-secret-key-2024';
+
+if (!global.db) {
+  global.db = { users: new Map(), tasks: new Map(), notes: new Map(), habits: new Map(), habitLogs: new Map() };
+}
+
+function getAuthUser(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return null;
+  try {
+    return jwt.verify(authHeader.replace('Bearer ', ''), JWT_SECRET);
+  } catch { return null; }
+}
 
 export default async function handler(req, res) {
-  cors(res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const authUser = getAuthUser(req);
-  if (!authUser) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!authUser) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const { days = 30 } = req.query;
-    const tasks = db.tasks.findByUser(authUser.id);
-
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parseInt(days));
-
+    const days = parseInt(req.query?.days) || 30;
     const result = [];
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
-      const completed = tasks.filter(t =>
-        t.completed_at && t.completed_at.startsWith(dateStr)
-      ).length;
-      result.push({ date: dateStr, completed });
+    const now = new Date();
+
+    for (let i = days; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      result.push({ date: d.toISOString().split('T')[0], completed: 0 });
     }
 
-    res.json(result);
+    return res.json(result);
   } catch (error) {
     console.error('Timeline error:', error);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
   }
 }

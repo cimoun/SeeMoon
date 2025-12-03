@@ -1,61 +1,54 @@
-import { db, generateId, getAuthUser, cors } from '../_lib/db.js';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'seemoon-demo-secret-key-2024';
+
+if (!global.db) {
+  global.db = { users: new Map(), tasks: new Map(), notes: new Map(), habits: new Map(), habitLogs: new Map() };
+}
+
+function generateId() {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+function getAuthUser(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return null;
+  try {
+    return jwt.verify(authHeader.replace('Bearer ', ''), JWT_SECRET);
+  } catch { return null; }
+}
 
 export default async function handler(req, res) {
-  cors(res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const authUser = getAuthUser(req);
-  if (!authUser) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!authUser) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
     if (req.method === 'GET') {
-      let tasks = db.tasks.findByUser(authUser.id);
-
-      const { status, priority, search } = req.query;
-
-      if (status) {
-        tasks = tasks.filter(t => t.status === status);
-      }
-      if (priority) {
-        tasks = tasks.filter(t => t.priority === priority);
-      }
-      if (search) {
-        const s = search.toLowerCase();
-        tasks = tasks.filter(t =>
-          t.title.toLowerCase().includes(s) ||
-          t.description?.toLowerCase().includes(s)
-        );
+      let tasks = [];
+      for (const task of global.db.tasks.values()) {
+        if (task.user_id === authUser.id) tasks.push(task);
       }
 
-      // Sort by priority and due date
-      const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-      tasks.sort((a, b) => {
-        if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-          return priorityOrder[a.priority] - priorityOrder[b.priority];
-        }
-        if (a.due_date && b.due_date) {
-          return new Date(a.due_date) - new Date(b.due_date);
-        }
-        return 0;
-      });
+      const { status, priority } = req.query || {};
+      if (status) tasks = tasks.filter(t => t.status === status);
+      if (priority) tasks = tasks.filter(t => t.priority === priority);
 
+      tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       return res.json(tasks);
     }
 
     if (req.method === 'POST') {
-      const { title, description, priority, due_date, tags } = req.body;
-
-      if (!title) {
-        return res.status(400).json({ error: 'Title is required' });
-      }
+      const { title, description, priority, due_date, tags } = req.body || {};
+      if (!title) return res.status(400).json({ error: 'Title is required' });
 
       const now = new Date().toISOString();
-      const task = db.tasks.create({
+      const task = {
         id: generateId(),
         user_id: authUser.id,
         title,
@@ -67,14 +60,15 @@ export default async function handler(req, res) {
         created_at: now,
         updated_at: now,
         completed_at: null,
-      });
+      };
 
+      global.db.tasks.set(task.id, task);
       return res.status(201).json(task);
     }
 
-    res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Tasks error:', error);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
   }
 }

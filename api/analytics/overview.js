@@ -1,28 +1,38 @@
-import { db, getAuthUser, cors } from '../_lib/db.js';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'seemoon-demo-secret-key-2024';
+
+if (!global.db) {
+  global.db = { users: new Map(), tasks: new Map(), notes: new Map(), habits: new Map(), habitLogs: new Map() };
+}
+
+function getAuthUser(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return null;
+  try {
+    return jwt.verify(authHeader.replace('Bearer ', ''), JWT_SECRET);
+  } catch { return null; }
+}
 
 export default async function handler(req, res) {
-  cors(res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const authUser = getAuthUser(req);
-  if (!authUser) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!authUser) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const tasks = db.tasks.findByUser(authUser.id);
-    const habits = db.habits.findByUser(authUser.id);
-    const notes = db.notes.findByUser(authUser.id);
     const today = new Date().toISOString().split('T')[0];
 
-    // Task stats
+    let tasks = [], notes = [], habits = [];
+    for (const t of global.db.tasks.values()) if (t.user_id === authUser.id) tasks.push(t);
+    for (const n of global.db.notes.values()) if (n.user_id === authUser.id) notes.push(n);
+    for (const h of global.db.habits.values()) if (h.user_id === authUser.id) habits.push(h);
+
     const total = tasks.length;
     const completed = tasks.filter(t => t.status === 'completed').length;
     const pending = tasks.filter(t => t.status === 'pending').length;
@@ -30,21 +40,17 @@ export default async function handler(req, res) {
     const due_today = tasks.filter(t => t.due_date === today && t.status !== 'completed').length;
     const overdue = tasks.filter(t => t.due_date && t.due_date < today && t.status !== 'completed').length;
 
-    // Habits completed today
     let completed_today = 0;
     for (const habit of habits) {
-      const todayLog = db.habitLogs.findByHabitAndDate(habit.id, today);
-      if (todayLog && todayLog.count >= habit.target) {
-        completed_today++;
+      for (const log of global.db.habitLogs.values()) {
+        if (log.habit_id === habit.id && log.date === today && log.count >= habit.target) {
+          completed_today++;
+          break;
+        }
       }
     }
 
-    // Simple streak calculation
-    let streak = 0;
-    // (simplified - just check if any habit was done today)
-    if (completed_today > 0) streak = 1;
-
-    res.json({
+    return res.json({
       tasks: {
         total,
         completed,
@@ -54,17 +60,15 @@ export default async function handler(req, res) {
         overdue,
         completion_rate: total > 0 ? Math.round((completed / total) * 100) : 0,
       },
-      notes: {
-        count: notes.length,
-      },
+      notes: { count: notes.length },
       habits: {
         total: habits.length,
         completed_today,
-        streak,
+        streak: completed_today > 0 ? 1 : 0,
       },
     });
   } catch (error) {
     console.error('Overview error:', error);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
   }
 }

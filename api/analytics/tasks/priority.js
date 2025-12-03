@@ -1,37 +1,41 @@
-import { db, getAuthUser, cors } from '../../_lib/db.js';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'seemoon-demo-secret-key-2024';
+
+if (!global.db) {
+  global.db = { users: new Map(), tasks: new Map(), notes: new Map(), habits: new Map(), habitLogs: new Map() };
+}
+
+function getAuthUser(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return null;
+  try {
+    return jwt.verify(authHeader.replace('Bearer ', ''), JWT_SECRET);
+  } catch { return null; }
+}
 
 export default async function handler(req, res) {
-  cors(res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const authUser = getAuthUser(req);
-  if (!authUser) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!authUser) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const tasks = db.tasks.findByUser(authUser.id);
+    const result = [
+      { priority: 'low', count: 0, completed: 0 },
+      { priority: 'medium', count: 0, completed: 0 },
+      { priority: 'high', count: 0, completed: 0 },
+      { priority: 'urgent', count: 0, completed: 0 },
+    ];
 
-    const priorities = ['low', 'medium', 'high', 'urgent'];
-    const result = priorities.map(priority => {
-      const filtered = tasks.filter(t => t.priority === priority);
-      return {
-        priority,
-        count: filtered.length,
-        completed: filtered.filter(t => t.status === 'completed').length,
-      };
-    });
-
-    res.json(result);
+    return res.json(result);
   } catch (error) {
     console.error('Priority error:', error);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
   }
 }

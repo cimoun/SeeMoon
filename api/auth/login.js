@@ -1,7 +1,22 @@
-import { db, generateToken, comparePassword, cors } from '../_lib/db.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'seemoon-demo-secret-key-2024';
+
+if (!global.db) {
+  global.db = {
+    users: new Map(),
+    tasks: new Map(),
+    notes: new Map(),
+    habits: new Map(),
+    habitLogs: new Map(),
+  };
+}
 
 export default async function handler(req, res) {
-  cors(res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -12,28 +27,41 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const user = db.users.findByEmail(email);
-    if (!user) {
+    let foundUser = null;
+    for (const user of global.db.users.values()) {
+      if (user.email === email) {
+        foundUser = user;
+        break;
+      }
+    }
+
+    if (!foundUser) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const validPassword = await comparePassword(password, user.password);
+    const validPassword = await bcrypt.compare(password, foundUser.password);
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const userData = { id: user.id, email: user.email, username: user.username };
-    const token = generateToken(userData);
+    const token = jwt.sign(
+      { id: foundUser.id, email: foundUser.email, username: foundUser.username },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
-    res.json({ user: userData, token });
+    return res.json({
+      user: { id: foundUser.id, email: foundUser.email, username: foundUser.username },
+      token,
+    });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error: ' + error.message });
   }
 }
