@@ -1,17 +1,32 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
     }
+  },
+  "rewrites": [
+    { "source": "/api/auth/register", "destination": "/api/auth/register" },
+    { "source": "/api/auth/login", "destination": "/api/auth/login" },
+    { "source": "/api/auth/me", "destination": "/api/auth/me" },
+    { "source": "/api/tasks", "destination": "/api/tasks/index" },
+    { "source": "/api/tasks/:id", "destination": "/api/tasks/[id]" },
+    { "source": "/api/notes", "destination": "/api/notes/index" },
+    { "source": "/api/notes/:id", "destination": "/api/notes/[id]" },
+    { "source": "/api/habits", "destination": "/api/habits/index" },
+    { "source": "/api/habits/:id", "destination": "/api/habits/[id]/index" },
+    { "source": "/api/habits/:id/log", "destination": "/api/habits/[id]/log" },
+    { "source": "/api/habits/:id/heatmap", "destination": "/api/habits/[id]/heatmap" },
+    { "source": "/api/analytics/overview", "destination": "/api/analytics/overview" },
+    { "source": "/api/analytics/tasks/timeline", "destination": "/api/analytics/tasks/timeline" },
+    { "source": "/api/analytics/tasks/priority", "destination": "/api/analytics/tasks/priority" },
+    { "source": "/api/analytics/weekly", "destination": "/api/analytics/weekly" },
+    { "source": "/api/profile", "destination": "/api/profile/index" },
+    { "source": "/api/profile/password", "destination": "/api/profile/password" },
+    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
